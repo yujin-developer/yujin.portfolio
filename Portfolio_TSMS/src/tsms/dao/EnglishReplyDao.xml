@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="tsms.dao.EnglishReplyDao">
+	<!-- 댓글 목록 -->
+	<select id="selectList" parameterType="int" resultType="reply">
+		select * from reply_table where bno = #{bno}
+	</select>
+	
+	<!-- 영어 게시판 댓글 등록 -->
+	<insert id="insert" parameterType="reply">
+        insert into reply_table 
+        (bno, content, replyer, replydate, updatedate)
+		values 
+		(#{bno}, #{content}, #{replyer}, now(), now())
+	</insert>
+	 
+	 <!-- 저장한 시간 불러오기 -->
+	 <select id="selectDate" parameterType="reply" resultType="date">
+		select max(replydate) from reply_table where bno = #{bno}
+	</select>
+	
+	 <!-- 상세보기 -->
+	<!-- <select id="selectOne" parameterType="int" resultType="english">
+		select * from english_board_table where student_id = #{student_id}
+	</select> -->
+	
+	<!-- 게시판 글 수정 -->
+	<!-- <update id="update" parameterType="map">
+        update english_board_table
+        <set>
+			<if test="subject != null">subject = #{subject},</if>  
+			<if test="content != null">content = #{content},</if>  
+			updatedate = now()      
+        </set> 
+        where student_id = #{student_id}
+	</update>  -->
+
+	<!-- 게시판 글 삭제 -->
+	<!-- <delete id="delete" parameterType="int">
+		delete from english_board_table where student_id = #{student_id}
+	</delete> -->
+
+	<!-- 조회수 update -->
+	<!-- <update id="updateReadcount" parameterType="map">
+		update english_board_table
+		set readcount = #{readcount}
+		where student_id = #{student_id}
+	</update> -->
+</mapper>

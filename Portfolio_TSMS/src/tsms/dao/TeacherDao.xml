@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="tsms.dao.TeacherDao">
+	<select id="selectList" parameterType="teacher" resultType="teacher">
+		select * from teacher_table order by createddate desc
+	</select>
+	
+	<select id="selectListMap" parameterType="map" resultType="teacher">
+		select * from teacher_table 
+		<where>
+			<if test='searchType eq "1"'> gender like concat('%',#{search},'%') </if>
+			<if test='searchType eq "2"'> university like concat('%',#{search},'%')</if>
+			<if test='searchType eq "3"'> subject like concat('%',#{search},'%') or subject = "무관"</if>
+			<if test='searchType eq "4"'> address1 like concat('%',#{search},'%')</if>
+		</where>
+		order by createddate desc
+	</select>
+	
+	<select id="selectRecommend" parameterType="map" resultType="teacher">
+		select * from teacher_table 
+	 	<choose>
+	 		<when test='true'>where gender = #{student_gender} and (address1 = #{student_address} or address2 = #{student_address}) and (subject = "무관" or subject like concat('%',#{student_subject},'%')) and (grade = "all" or grade like concat('%',#{student_grade},'%'))</when>
+	 		<when test=''>where (address1 = #{student_address} or address2 = #{student_address}) and (subject = "무관" or subject like concat('%',#{student_subject},'%')) and (grade = "all" or grade like concat('%',#{student_grade},'%'))</when>
+	 		<when test=''>where gender = #{student_gender} and (subject = "무관" or subject like concat('%',#{student_subject},'%')) and (grade = "all" or grade like concat('%',#{student_grade},'%'))</when>
+	 		<when test=''>where (subject = "무관" or subject like concat('%',#{student_subject},'%')) and (grade = "all" or grade like concat('%',#{student_grade},'%'))</when>
+	 		<otherwise></otherwise>
+	 	</choose>
+	</select>
+	
+	<insert id="insert" parameterType="teacher">
+        insert into teacher_table 
+        (id, password, name, gender, age, email, university, address1, address2, subject, grade, day, time, introduce, photo, createddate)
+		values 
+		(#{id}, #{password}, #{name}, #{gender}, #{age}, #{email}, #{university}, #{address1}, #{address2}, #{subject}, #{grade}, #{day}, #{time}, #{introduce}, #{photo}, now())
+	</insert>
+	
+	<select id="selectOne" parameterType="String" resultType="teacher">
+		select * from teacher_table where id = #{id}
+	</select>
+	
+	<select id="selectOneForUpdate" parameterType="int" resultType="teacher">
+		select * from teacher_table where teacher_id = #{teacher_id}
+	</select>
+	
+	<update id="update" parameterType="map">
+        update teacher_table 
+        <set>
+			<if test="id != null">id = #{id},</if>  
+			<if test="password != null">password = #{password},</if>  
+			<if test="name != null">name = #{name},</if>  
+			<if test="gender != null">gender = #{gender},</if>  
+			<if test="age != null">age = #{age},</if>  
+			<if test="email != null">email = #{email},</if>  
+			<if test="university != null">university = #{university},</if>  
+			<if test="address1 != null">address1 = #{address1},</if>  
+			<if test="address2 != null">address2 = #{address2},</if>  
+			<if test="subject != null">subject = #{subject},</if>  
+			<if test="grade != null">grade = #{grade},</if>  
+			<if test="day != null">day = #{day},</if>  
+			<if test="time != null">time = #{time},</if>  
+			<if test="introduce != null">introduce = #{introduce},</if>  
+			<if test="photo != null">photo = #{photo},</if>  
+			createddate = now()      
+        </set> 
+        where teacher_id = #{teacher_id}
+	</update> 
+
+	<delete id="delete" parameterType="int">
+		delete from teacher_table where teacher_id = #{teacher_id}
+	</delete>
+
+	<select id="exist" parameterType="teacher" resultType="teacher">
+		select * from teacher_table where id=#{id} and password=#{password}
+	</select>
+
+	<select id="selectUniOption" parameterType="university" resultType="university">
+		select distinct(university) from university_book_table order by university
+	</select>
+	
+	<select id="selectAddrOption" parameterType="address" resultType="address">
+		select distinct(si_do) from address_book_table order by si_do
+	</select>
+	
+	<select id="selectAddrOptionSigungu" parameterType="String" resultType="address">
+		select si_gun_gu from address_book_table where si_do = #{si_do} order by si_gun_gu
+	</select>
+
+	<select id="selectDuplicateId" parameterType="String" resultType="teacher">
+		select * from teacher_table where id = #{checkId}
+	</select>
+	
+	<update id="updateReadcount" parameterType="map">
+		update teacher_table
+		set readcount = #{readcount}
+		where id = #{id}
+	</update>
+</mapper>

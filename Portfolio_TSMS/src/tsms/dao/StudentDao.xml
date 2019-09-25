@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="tsms.dao.StudentDao">
+	<select id="selectList" parameterType="student" resultType="student">
+		select * from student_table order by createddate desc
+	</select>
+	
+	<select id="selectListMap" parameterType="map" resultType="student">
+		select * from student_table 
+		<where>
+			<if test='searchType eq "1"'>gender like concat('%',#{search},'%')</if>
+			<if test='searchType eq "2"'>subject like concat('%',#{search},'%')</if>
+			<if test='searchType eq "3"'>address like concat('%',#{search},'%')</if>
+			<if test='searchType eq "4"'>grade like concat('%',#{search},'%')</if>
+		</where>
+		order by createddate desc
+	</select>
+	
+	<insert id="insert" parameterType="student">
+        insert into student_table 
+        (id, password, name, gender, age, email, address, subject, grade, day, time, introduce, createddate)
+		values 
+		(#{id}, #{password}, #{name}, #{gender}, #{age}, #{email}, #{address}, #{subject}, #{grade}, #{day}, #{time}, #{introduce}, now())
+	</insert>
+	
+	<select id="selectOne" parameterType="String" resultType="student">
+		select * from student_table where id = #{id}
+	</select>
+	
+	<update id="update" parameterType="map">
+        update student_table 
+        <set>
+			<if test="id != null">id = #{id},</if>  
+			<if test="password != null">password = #{password},</if>  
+			<if test="name != null">name = #{name},</if>  
+			<if test="gender != null">gender = #{gender},</if>  
+			<if test="age != null">age = #{age},</if>  
+			<if test="email != null">email = #{email},</if>  
+			<if test="address1 != null">address = #{address},</if>  
+			<if test="subject != null">subject = #{subject},</if>  
+			<if test="grade != null">grade = #{grade},</if>  
+			<if test="day != null">day = #{day},</if>  
+			<if test="time != null">time = #{time},</if>  
+			<if test="introduce != null">introduce = #{introduce},</if>  
+			createddate = now()      
+        </set> 
+        where student_id = #{student_id}
+	</update> 
+
+	<delete id="delete" parameterType="int">
+		delete from student_table where student_id = #{student_id}
+	</delete>
+
+	<select id="exist" parameterType="student" resultType="student">
+		select * from student_table where id=#{id} and password=#{password}
+	</select>
+
+	<select id="selectAddrOption" parameterType="address" resultType="address">
+		select distinct(si_do) from address_book_table order by si_do
+	</select>
+	
+	<select id="selectAddrOptionSigungu" parameterType="String" resultType="address">
+		select si_gun_gu from address_book_table where si_do = #{si_do} order by si_gun_gu
+	</select>
+
+	<select id="selectDuplicateId" parameterType="String" resultType="student">
+		select id from student_table where id = #{checkId}
+	</select>
+	
+	<update id="updateReadcount" parameterType="map">
+		update student_table
+		set readcount = #{readcount}
+		where id = #{id}
+	</update>
+</mapper>

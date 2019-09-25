@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="tsms.dao.EnglishBoardDao">
+	<!-- 게시판 목록 -->
+	<select id="selectList" parameterType="english" resultType="english">
+		select * from english_board_table order by createddate desc
+	</select>
+	
+	<select id="selectListMap" parameterType="map" resultType="english">
+		select * from english_board_table 
+		<where>
+			<if test='searchType eq "1"'>name like concat('%',#{search},'%')</if>
+			<if test='searchType eq "2"'>subject like concat('%',#{search},'%')</if>
+			<if test='searchType eq "3"'>content like concat('%',#{search},'%')</if>
+		</where>
+		order by createddate desc
+	</select>
+	
+	<!-- 게시판 새글 등록 -->
+	<insert id="insert" parameterType="english">
+        insert into english_board_table 
+        (student_id, subject, content, createddate, photo, name)
+		values 
+		(#{student_id}, #{subject}, #{content}, now(), #{photo}, #{name})
+	</insert>
+	 
+	 <!-- 상세보기 -->
+	<select id="selectOne" parameterType="int" resultType="english">
+		select * from english_board_table where bno = #{bno}
+	</select>
+	
+	<!-- 게시판 글 수정 -->
+	<update id="update" parameterType="map">
+        update english_board_table
+        <set>
+			<if test="subject != null">subject = #{subject},</if>  
+			<if test="content != null">content = #{content},</if>  
+			updatedate = now()      
+        </set> 
+        where student_id = #{student_id}
+	</update> 
+
+	<!-- 게시판 글 삭제 -->
+	<delete id="delete" parameterType="int">
+		delete from english_board_table where student_id = #{student_id}
+	</delete>
+
+	<!-- 조회수 update -->
+	<update id="updateReadcount" parameterType="map">
+		update english_board_table
+		set readcount = #{readcount}
+		where bno = #{bno}
+	</update>
+</mapper>
